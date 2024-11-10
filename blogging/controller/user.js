@@ -16,11 +16,16 @@ async function handleSignupUser(req, res) {
 
 async function handleSignInUser(req,res){
   const {email, password } = req.body;
-  const isMatchedUser = user.matchPassword(email, password);
-  if(isMatchedUser) {
-    console.log("user",isMatchedUser.fullName);
+  const token = await user.matchPassword(email, password);
+  if(token){
+    return res.cookie('token', token).redirect("/");
   }
-  return res.redirect("/"); // redirect to home page or login page
+  return res.status(404).send({message: "Could not find post."});
 }
 
-module.exports = { handleSignup, handleLoginUser, handleSignupUser,handleSignInUser };
+async function handleLogoutUser(req, res) {
+  res.clearCookie("token");
+  return res.redirect("/");
+}
+
+module.exports = { handleSignup, handleLoginUser, handleSignupUser,handleSignInUser,handleLogoutUser };

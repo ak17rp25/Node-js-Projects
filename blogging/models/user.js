@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const {createTokenForUser} = require('../service/auth')
 
 const { createHmac, randomBytes } = require("crypto");
 
@@ -54,15 +55,21 @@ schema.pre("save", function (done) {
 
 schema.static("matchPassword", async function (email, password) {
   const user = await this.findOne({email});
+  console.log(user);
   if (!user) {
     return null;
   }
   const salt = user.salt;
   const hashPassword = user.password;
   const hashedPassword = createHmac("sha256", salt).update(password).digest("hex");
-  console.log(user);
-  if(hashPassword === hashedPassword){
-    return (user);
+  console.log(hashedPassword===hashPassword);
+  if(hashPassword == hashedPassword){
+    const token =  (createTokenForUser(user));
+    console.log(token);
+    return token;
+  }
+  else{
+    return null;
   }
 })
 const model = mongoose.model("User", schema);
