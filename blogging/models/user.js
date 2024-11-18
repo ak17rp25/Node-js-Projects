@@ -24,7 +24,7 @@ const schema = new mongoose.Schema(
     },
     profileImageUrl: {
       type: "string",
-      default: "/blogging/public/images/avatar.png",
+      default: "avatar.png",
     },
     role: {
       type: "string",
@@ -39,7 +39,6 @@ schema.pre("save", function (done) {
   const user = this;
   
   const password = user.password;
-  console.log(user.isModified(password));
   if (!user.isModified("password")) {
     return;
   }
@@ -55,17 +54,14 @@ schema.pre("save", function (done) {
 
 schema.static("matchPassword", async function (email, password) {
   const user = await this.findOne({email});
-  console.log(user);
   if (!user) {
     return null;
   }
   const salt = user.salt;
   const hashPassword = user.password;
   const hashedPassword = createHmac("sha256", salt).update(password).digest("hex");
-  console.log(hashedPassword===hashPassword);
   if(hashPassword == hashedPassword){
     const token =  (createTokenForUser(user));
-    console.log(token);
     return token;
   }
   else{

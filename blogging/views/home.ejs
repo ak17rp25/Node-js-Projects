@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <%- include('./partials/head') %>
     <title>Blogging APP</title>
     <%- include('./partials/style') %>
-</head>
-<body>
-    <%- include('./partials/nav') %>
-    <%- include('./partials/script') %>
-</body>
+  </head>
+  <body>
+    <%- include('./partials/nav') %> <%- include('./partials/script') %>
+    <div class="container mt-5 card-container">
+        <% blogs?.forEach((element) => { %>
+        <div class="card">
+          <img src="<%= element.coverImage %>" class="card-img-top" alt="Blog Image" />
+          <div class="card-body">
+            <h5 class="card-title"><%= element.title %></h5>
+            <p class="card-text">
+              <%= element.content.substring(0, 120) %>...
+            </p>
+            <a href="/blog/<%= element._id %>" class="btn btn-primary">Read More</a>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+  </body>
 </html>
