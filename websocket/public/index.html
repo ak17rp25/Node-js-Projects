@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Bot Application</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+      }
+
+      body {
+        background-color: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 10px;
+      }
+
+      #chat-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 500px;
+        height: 80%;
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      #messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      #messages li {
+        list-style: none;
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 20px;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      #messages .sent {
+        align-self: flex-end;
+        background-color: #007bff;
+      }
+
+      #messages .received {
+        align-self: flex-start;
+        background-color: #6c757d;
+      }
+
+      #form {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: #f8f9fa;
+      }
+
+      #input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+
+      #input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      button:focus {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat-container">
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <input
+          id="input"
+          autocomplete="off"
+          placeholder="Type your message..."
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messages = document.getElementById("messages");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (input.value) {
+          // Append sent message
+          const li = document.createElement("li");
+          li.textContent = input.value;
+          li.classList.add("sent");
+          messages.appendChild(li);
+          messages.scrollTop = messages.scrollHeight;
+
+          // Emit message to server
+          socket.emit("message", input.value);
+
+          input.value = "";
+        }
+      });
+
+      // Receive messages from server
+      socket.on("user-message", (msg) => {
+        const li = document.createElement("li");
+        li.textContent = msg;
+        li.classList.add("received");
+        messages.appendChild(li);
+        messages.scrollTop = messages.scrollHeight;
+      });
+    </script>
+  </body>
+</html>
