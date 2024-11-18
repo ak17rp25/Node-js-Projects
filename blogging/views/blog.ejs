@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/head') %>
+    <title>My Blogs</title>
+    <%- include('./partials/style') %>
+  </head>
+  <body>
+    <%- include('./partials/nav') %> <%- include('./partials/script') %>
+    <div class="container m-5">
+      <% blogs?.forEach(element => { %>
+      <div class="card">
+        <img src="<%= element?.coverImage %>" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title"><%= element.title %></h5>
+          <p class="card-text"><%= element.content %></p>
+          <a href="/" class="btn btn-primary">Go Back</a>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+       <% if (locals.user) { %>
+        <div class="container mt-4">
+            <h4>Comments</h4>
+            <form action="/comments/<%= element._id %>" method="post">
+              <div class="mb-3">
+                <label for="comment" class="form-label">Your Comment</label>
+                <textarea
+                  class="form-control"
+                  id="comment"
+                  name="comment"
+                  rows="3"
+                  placeholder="Leave a comment..."
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+          </div>
+       <% } %>
+      
+
+      <% }) %>
+    </div>
+    <div class="container mt-3">
+      <% comments.forEach(comment => { %>
+        <div class="card mt-3">
+          <div class="card-body">
+            <h5 class="card-title"><%= comment.createBy?.fullName %></h5>
+            <p class="card-text"><%= comment.comments %></p>
+          </div>
+        </div>
+
+      <% }) %>
+
+    </div>
+  </body>
+</html>
